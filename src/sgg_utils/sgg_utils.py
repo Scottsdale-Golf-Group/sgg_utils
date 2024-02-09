@@ -1,13 +1,16 @@
 import requests
 import json
 import logging
+import os
 
 API_URL = 'https://api.foreupsoftware.com/api_rest/index.php'
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 def get_token(username, password):
     '''Get token from foreup api'''
     logging.info(API_URL)
-    
+
     body =     {
         "email": username,
         "password": password
@@ -18,9 +21,15 @@ def get_token(username, password):
     }
 
     r = requests.post(f'{API_URL}/tokens', json=body, headers=headers)
-    content = json.loads(r.content)
+
+    if r.status_code != 200:
+        logging.error(f'Error: {r.status_code}')
+        return None
     
-    return content['token']
+    content = json.loads(r.content)
+    token = content["data"]["id"]
+
+    return token
 
 
 def get_courses(token):
