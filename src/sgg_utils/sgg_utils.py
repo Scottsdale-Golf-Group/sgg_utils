@@ -1,11 +1,13 @@
 import requests
 import json
+import logging
 
 API_URL = 'https://api.foreupsoftware.com/api_rest/index.php'
 
 def get_token(username, password):
     '''Get token from foreup api'''
-    print(API_URL)
+    logging.info(API_URL)
+    
     body =     {
         "email": username,
         "password": password
