@@ -14,6 +14,7 @@ BOOKING_TEST_CASE = {
     'DATE_BOOKED' : '2023-10-23T14:41:05+00:00'
 }
 
+
 def test_token():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
@@ -41,3 +42,19 @@ def test_booking():
     token = sgg_utils.get_token(username, password)
     bookings = sgg_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'])
     assert bookings['data']['attributes']['dateBooked'] == BOOKING_TEST_CASE['DATE_BOOKED']
+
+def test_teesheet():
+    username = os.environ.get('FOREUP_USER')
+    password = os.environ.get('FOREUP_PW')
+    token = sgg_utils.get_token(username, password)
+    teesheets = sgg_utils.get_teesheet(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
+    assert teesheets['data'] is not None
+    assert len(teesheets) > 0
+
+def test_season():
+    username = os.environ.get('FOREUP_USER')
+    password = os.environ.get('FOREUP_PW')
+    token = sgg_utils.get_token(username, password)
+    seasons = sgg_utils.get_season(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
+    assert seasons['data'] is not None
+    assert len(seasons) > 0
