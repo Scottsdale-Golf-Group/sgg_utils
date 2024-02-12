@@ -9,7 +9,6 @@ logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
 
 def get_token(username, password):
     '''Get token from foreup api'''
-    logging.info(API_URL)
 
     body =     {
         "email": username,
@@ -59,7 +58,6 @@ def get_sale(token, course_id, sale_id, include: list = []):
     else:
         included = ''
 
-    print(f'{API_URL}/courses/{course_id}/sales/{sale_id}{include}') 
     r = requests.get(f'{API_URL}/courses/{course_id}/sales/{sale_id}{included}', headers=headers)
     
     # Check if the response contains valid JSON
