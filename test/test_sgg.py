@@ -14,7 +14,6 @@ BOOKING_TEST_CASE = {
     'DATE_BOOKED' : '2023-10-23T14:41:05+00:00'
 }
 
-
 def test_token():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
