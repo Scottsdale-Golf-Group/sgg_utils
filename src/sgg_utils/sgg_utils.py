@@ -2,6 +2,9 @@ import requests
 import json
 import logging
 import os
+import pandas as pd
+from datetime import datetime, timedelta
+
 
 API_URL = 'https://api.foreupsoftware.com/api_rest/index.php'
 
@@ -151,18 +154,18 @@ def create_hook(token, url, hook_type):
     return content
 
 
-def get_season(token, course_id, teesheet_id):
+def get_season(token, course_id, teesheet_id, season_id):
     '''get season for a course and teesheet'''
 
     headers = {
         'Content-Type': 'application/json',
         'x-authorization': f'Bearer {token}'
     }
-    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/seasons', headers=headers)
+    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/seasons/{season_id}', headers=headers)
     content = json.loads(r.content)
     return content
 
-def get_season_timeframe(token, course_id, teesheet_id, season_id):
+def get_all_timeframes(token, course_id, teesheet_id, season_id):
     '''get timeframe for a season'''
     headers = {
         'Content-Type': 'application/json',
@@ -172,7 +175,19 @@ def get_season_timeframe(token, course_id, teesheet_id, season_id):
     content = json.loads(r.content)
     return content
 
-def get_seasons(token, course_id, teesheet_id):
+def get_timeframe(token, course_id, teesheet_id, season_id, timeframe_id):
+    '''get timeframe for a season'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/seasons/{season_id}/timeframes/{timeframe_id}', headers=headers)
+    content = json.loads(r.content)
+    return content
+
+
+
+def get_all_seasons(token, course_id, teesheet_id):
     '''get seasons for a course and teesheet'''
     headers = {
         'Content-Type': 'application/json',
@@ -184,11 +199,19 @@ def get_seasons(token, course_id, teesheet_id):
 
 def get_seasons_dict(token, course_id, teesheet_id):
     '''get seasons for a course and teesheet'''
-    seasons = get_seasons(token, course_id, teesheet_id)['data']
+    seasons = get_all_seasons(token, course_id, teesheet_id)['data']
     season_dict = {}
     for season in seasons:
         season_dict[season['id']] = season['attributes']['name']
     return season_dict
+
+def get_timeframe_dict(token, course_id, teesheet_id, season_id):
+    '''get timeframes for a season'''
+    timeframes = get_all_timeframes(token, course_id, teesheet_id, season_id)['data']
+    timeframe_dict = {}
+    for timeframe in timeframes:
+        timeframe_dict[timeframe['id']] = timeframe['attributes']['name']
+    return timeframe_dict
 
 
 def get_pricing(token, course_id, teesheet_id, booking_id):
@@ -200,3 +223,63 @@ def get_pricing(token, course_id, teesheet_id, booking_id):
     r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings/{booking_id}/pricing', headers=headers)
     content = json.loads(r.content)
     return content
+
+def get_price_class(token, course_id, price_class_id):
+    '''get price class for a season and timeframe'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    r = requests.get(f'{API_URL}/courses/{course_id}/priceClasses/{price_class_id}', headers=headers)
+    content = json.loads(r.content)
+    return content
+
+def get_bookings(token, course_id, teesheet_id, sd, ed, limit='100', verbose=False):
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+
+    # Create DataFrames to store sales and sales_items data
+    bookings_data = []
+    players = []
+
+    cont = True
+    while cont:
+        # Make a call to the API
+        r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings?limit={limit}&startDate={sd}&endDate={ed}&include=players', headers=headers)
+
+        # Check if the response contains valid JSON
+        try:
+            content = r.json()
+        except json.JSONDecodeError:
+            print("Error: Invalid JSON response.")
+            cont = False
+            continue
+
+        # Check that there is content
+        if r.status_code == 200 and len(content['data']) > 0:
+            bookings_data.extend(content['data'])
+            players.extend(content['included'])
+
+            # Update the new start date from last entry
+            ts = content['data'][-1]['attributes']['dateBooked']
+            datetime_obj = datetime.fromisoformat(ts) - timedelta(hours=0) + timedelta(seconds=1)
+            sd = datetime_obj.strftime('%Y-%m-%dT%H:%M:%S')
+            if verbose:
+                print("Rolling window", sd)
+        else:
+            print("Final status code:", r.status_code)
+            cont = False
+
+    # Create DataFrames from the collected data
+    bookings_df = pd.DataFrame(bookings_data)
+    #players_df = pd.DataFrame(players) ## worry about players later
+
+    # Clean up df
+    bookings_df['attributes'] = bookings_df['attributes'].apply(lambda x: json.dumps(x))
+    bookings_df['course_id'] = course_id
+    bookings_df['teesheet_id'] = teesheet_id
+    bookings_df['name_course'] = get_courses(course_id)[course_id]
+
+    return bookings_df
