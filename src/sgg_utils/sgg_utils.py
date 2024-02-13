@@ -64,7 +64,7 @@ def get_sale(token, course_id, sale_id, include: list = []):
     try:
         content = r.json()
     except json.JSONDecodeError:
-        print("Error: Invalid JSON response.")
+        logging.error(f'Error: {r.status_code}')
 
     return content
 
@@ -83,7 +83,7 @@ def get_booking(token, course_id, teesheet_id, booking_id, include: list = []):
     try:
         content = r.json()
     except json.JSONDecodeError:
-        print("Error: Invalid JSON response.")
+        logging.error(f'Error: {r.status_code}')
 
     return content
 
@@ -102,7 +102,7 @@ def get_teesheet(token, course_id, teesheet_id, include: list = []):
     try:
         content = r.json()
     except json.JSONDecodeError:
-        print("Error: Invalid JSON response.")
+        logging.error(f'Error: {r.status_code}')
 
     return content
 
@@ -169,5 +169,34 @@ def get_season_timeframe(token, course_id, teesheet_id, season_id):
         'x-authorization': f'Bearer {token}'
     }
     r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/seasons/{season_id}/timeframes', headers=headers)
+    content = json.loads(r.content)
+    return content
+
+def get_seasons(token, course_id, teesheet_id):
+    '''get seasons for a course and teesheet'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/seasons', headers=headers)
+    content = json.loads(r.content)
+    return content
+
+def get_seasons_dict(token, course_id, teesheet_id):
+    '''get seasons for a course and teesheet'''
+    seasons = get_seasons(token, course_id, teesheet_id)['data']
+    season_dict = {}
+    for season in seasons:
+        season_dict[season['id']] = season['attributes']['name']
+    return season_dict
+
+
+def get_pricing(token, course_id, teesheet_id, booking_id):
+    '''get pricing for a season and timeframe'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings/{booking_id}/pricing', headers=headers)
     content = json.loads(r.content)
     return content
