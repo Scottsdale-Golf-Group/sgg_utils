@@ -280,6 +280,6 @@ def get_bookings(token, course_id, teesheet_id, sd, ed, limit='100', verbose=Fal
     bookings_df['attributes'] = bookings_df['attributes'].apply(lambda x: json.dumps(x))
     bookings_df['course_id'] = course_id
     bookings_df['teesheet_id'] = teesheet_id
-    bookings_df['name_course'] = get_courses(course_id)[course_id]
+    bookings_df['name_course'] = get_courses(token)[course_id]
 
     return bookings_df
