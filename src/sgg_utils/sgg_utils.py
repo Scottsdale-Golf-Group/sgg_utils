@@ -108,6 +108,16 @@ def get_teesheet(token, course_id, teesheet_id, include: list = []):
 
     return content
 
+def get_all_teesheets(token, course_id):
+    '''get all teesheets for a course'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets', headers=headers)
+    content = json.loads(r.content)
+    return content
+
 
 def get_hooks(token):
   '''Get all hooks from foreup api'''
