@@ -5,7 +5,6 @@ import os
 import pandas as pd
 from datetime import datetime, timedelta
 
-
 API_URL = 'https://api.foreupsoftware.com/api_rest/index.php'
 
 logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
@@ -185,8 +184,6 @@ def get_timeframe(token, course_id, teesheet_id, season_id, timeframe_id):
     content = json.loads(r.content)
     return content
 
-
-
 def get_all_seasons(token, course_id, teesheet_id):
     '''get seasons for a course and teesheet'''
     headers = {
@@ -234,24 +231,28 @@ def get_price_class(token, course_id, price_class_id):
     content = json.loads(r.content)
     return content
 
-def get_bookings(token, course_id, teesheet_id, sd, ed, limit='100', verbose=False):
+def get_bookings(token, course_id, teesheet_id, sd, ed, include: list = [], limit='100', verbose=False):
     headers = {
         'Content-Type': 'application/json',
         'x-authorization': f'Bearer {token}'
     }
-
-    # Create DataFrames to store sales and sales_items data
+    start = sd
     bookings_data = []
-    players = []
+
+    if len(include) > 0:
+        included = '?include=' + '&'.join(include)
+    else:
+        included = ''
 
     cont = True
     while cont:
         # Make a call to the API
-        r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings?limit={limit}&startDate={sd}&endDate={ed}&include=players', headers=headers)
+        r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings?limit={limit}&startDate={start}&endDate={ed}{included}', headers=headers)
 
         # Check if the response contains valid JSON
         try:
             content = r.json()
+            
         except json.JSONDecodeError:
             print("Error: Invalid JSON response.")
             cont = False
@@ -260,14 +261,13 @@ def get_bookings(token, course_id, teesheet_id, sd, ed, limit='100', verbose=Fal
         # Check that there is content
         if r.status_code == 200 and len(content['data']) > 0:
             bookings_data.extend(content['data'])
-            players.extend(content['included'])
 
             # Update the new start date from last entry
             ts = content['data'][-1]['attributes']['dateBooked']
             datetime_obj = datetime.fromisoformat(ts) - timedelta(hours=0) + timedelta(seconds=1)
-            sd = datetime_obj.strftime('%Y-%m-%dT%H:%M:%S')
+            start = datetime_obj.strftime('%Y-%m-%dT%H:%M:%S')
             if verbose:
-                print("Rolling window", sd)
+                print("Rolling window", start)
         else:
             print("Final status code:", r.status_code)
             cont = False
@@ -275,11 +275,23 @@ def get_bookings(token, course_id, teesheet_id, sd, ed, limit='100', verbose=Fal
     # Create DataFrames from the collected data
     bookings_df = pd.DataFrame(bookings_data)
     #players_df = pd.DataFrame(players) ## worry about players later
+    bookings_df.columns = ['type', 'booking_id', 'attributes', 'relationships']
 
     # Clean up df
     bookings_df['attributes'] = bookings_df['attributes'].apply(lambda x: json.dumps(x))
     bookings_df['course_id'] = course_id
     bookings_df['teesheet_id'] = teesheet_id
     bookings_df['name_course'] = get_courses(token)[course_id]
+    if len(include) > 0:
+        bookings_df['relationships'] = bookings_df['relationships'].apply(lambda x: json.dumps(x))
+
+    # clean up
+    top_cols = ['booking_id', 'course_id', 'teesheet_id', 'name_course']
+    cols = top_cols + [col for col in bookings_df.columns if col not in top_cols]
+    bookings_df = pd.DataFrame(bookings_df[cols]) 
 
     return bookings_df
+
+
+
+

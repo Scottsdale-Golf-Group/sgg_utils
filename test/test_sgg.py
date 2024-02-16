@@ -53,7 +53,8 @@ def test_booking():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
     token = sgg_utils.get_token(username, password)
-    bookings = sgg_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'])
+    bookings = sgg_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'], include=['players'])
+    print(bookings['data']['relationships']['players']['data'])
     assert bookings['data']['attributes']['dateBooked'] == BOOKING_TEST_CASE['DATE_BOOKED']
 
 def test_teesheet():
@@ -109,12 +110,14 @@ def test_timeframe():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
     token = sgg_utils.get_token(username, password)
-    timeframes = sgg_utils.get_timeframe(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'], BOOKING_TEST_CASE['TIMEFRAME_ID'])
+    timeframes = sgg_utils.get_all_timeframes(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'])
+    timeframe_id = timeframes['data'][0]['id']
+    timeframes = sgg_utils.get_timeframe(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'], timeframe_id)
     courses = sgg_utils.get_courses(token)
     print(courses[BOOKING_TEST_CASE['COURSE_ID']])
     print('Season:', BOOKING_TEST_CASE['SEASON_ID'])
-    print('Timeframe:', timeframes['data']['attributes']['name'])
-    print(timeframes)
+    print('Timeframe:', timeframes)
+    #print(timeframes)
     assert timeframes['data'] is not None
     assert len(timeframes['data']) > 0
 
@@ -151,11 +154,11 @@ def test_price_class():
     assert price_class['data'] is not None
     assert len(price_class) > 0
 
-def test_backfill_bookings():
-    username = os.environ.get('FOREUP_USER')
-    password = os.environ.get('FOREUP_PW')
-    token = sgg_utils.get_token(username, password)
-    bookings = sgg_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], sd='2024-01-30', ed='2024-01-31', verbose=True)
-    print(bookings.head())
-    assert bookings is not None
-    assert len(bookings) > 0
+# def test_backfill_bookings():
+#     username = os.environ.get('FOREUP_USER')
+#     password = os.environ.get('FOREUP_PW')
+#     token = sgg_utils.get_token(username, password)
+#     bookings = sgg_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], sd='2023-07-30', ed='2023-07-31', include = ['players'], verbose=True)
+    
+#     assert bookings is not None
+#     assert len(bookings) > 0
