@@ -64,30 +64,29 @@ def get_sale(token, course_id, sale_id, include: list = []):
     
     # Check if the response contains valid JSON
     try:
-        content = r.json()
+        content = json.loads(r.content)
     except json.JSONDecodeError:
         logging.error(f'Error: {r.status_code}')
 
     return content
 
-def get_booking(token, course_id, teesheet_id, booking_id, include: list = []):
+def get_booking(token, course_id, teesheet_id, booking_id):
     headers = {
         'Content-Type': 'application/json',
         'x-authorization': f'Bearer {token}'
     }
-    if len(include) > 0:
-        included = '?include=' + '&'.join(include)
-    else:
-        included = ''
-
-    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings/{booking_id}{included}', headers=headers)
+    bookings_data = []
+    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings/{booking_id}', headers=headers)
 
     try:
-        content = r.json()
+        content = json.loads(r.content)
     except json.JSONDecodeError:
         logging.error(f'Error: {r.status_code}')
 
-    return content
+    if r.status_code == 200 and len(content['data']) > 0:
+        bookings_data.append(content['data'])
+
+    return bookings_data
 
 def get_teesheet(token, course_id, teesheet_id, include: list = []):
     headers = {
@@ -161,7 +160,6 @@ def create_hook(token, url, hook_type):
     content = json.loads(r.content)
     
     return content
-
 
 def get_season(token, course_id, teesheet_id, season_id):
     '''get season for a course and teesheet'''
@@ -241,28 +239,29 @@ def get_price_class(token, course_id, price_class_id):
     content = json.loads(r.content)
     return content
 
-def get_bookings(token, course_id, teesheet_id, sd, ed, include: list = [], limit='100', verbose=False):
+def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, limit=100):
+    '''Accepts a course id, teesheet id and a start date.
+    Returns an array of json data for a single day.
+    If an end_date is provided, it will return all bookings between the start and end date.'''
     headers = {
         'Content-Type': 'application/json',
         'x-authorization': f'Bearer {token}'
     }
-    start = sd
-    bookings_data = []
-
-    if len(include) > 0:
-        included = '?include=' + '&'.join(include)
+    sd = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date is None:
+        ed = (sd + timedelta(days=1)).strftime('%Y-%m-%d')
     else:
-        included = ''
+        ed = end_date
+
+    index = 0
+    bookings_data = []
 
     cont = True
     while cont:
         # Make a call to the API
-        r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings?limit={limit}&startDate={start}&endDate={ed}{included}', headers=headers)
-
-        # Check if the response contains valid JSON
+        r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings?limit={limit}&start={index}&startDate={sd}&endDate={ed}', headers=headers)
         try:
-            content = r.json()
-            
+            content = json.loads(r.content)
         except json.JSONDecodeError:
             print("Error: Invalid JSON response.")
             cont = False
@@ -272,35 +271,17 @@ def get_bookings(token, course_id, teesheet_id, sd, ed, include: list = [], limi
         if r.status_code == 200 and len(content['data']) > 0:
             bookings_data.extend(content['data'])
 
-            # Update the new start date from last entry
-            ts = content['data'][-1]['attributes']['dateBooked']
-            datetime_obj = datetime.fromisoformat(ts) - timedelta(hours=0) + timedelta(seconds=1)
-            start = datetime_obj.strftime('%Y-%m-%dT%H:%M:%S')
-            if verbose:
-                print("Rolling window", start)
+            ## end if results are less than limit, else increment the index
+            if len(content['data']) < limit:
+                print("No more results")
+                break
+            else:
+                index += limit
         else:
             print("Final status code:", r.status_code)
             cont = False
 
-    # Create DataFrames from the collected data
-    bookings_df = pd.DataFrame(bookings_data)
-    #players_df = pd.DataFrame(players) ## worry about players later
-    bookings_df.columns = ['type', 'booking_id', 'attributes', 'relationships']
-
-    # Clean up df
-    bookings_df['attributes'] = bookings_df['attributes'].apply(lambda x: json.dumps(x))
-    bookings_df['course_id'] = course_id
-    bookings_df['teesheet_id'] = teesheet_id
-    bookings_df['name_course'] = get_courses(token)[course_id]
-    if len(include) > 0:
-        bookings_df['relationships'] = bookings_df['relationships'].apply(lambda x: json.dumps(x))
-
-    # clean up
-    top_cols = ['booking_id', 'course_id', 'teesheet_id', 'name_course']
-    cols = top_cols + [col for col in bookings_df.columns if col not in top_cols]
-    bookings_df = pd.DataFrame(bookings_df[cols]) 
-
-    return bookings_df
+    return bookings_data
 
 
 
