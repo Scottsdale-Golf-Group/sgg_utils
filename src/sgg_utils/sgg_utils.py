@@ -85,6 +85,7 @@ def get_booking(token, course_id, teesheet_id, booking_id):
 
     if r.status_code == 200 and len(content['data']) > 0:
         bookings_data.append(content['data'])
+        print(content)
 
     return bookings_data
 
