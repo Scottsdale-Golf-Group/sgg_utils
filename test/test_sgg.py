@@ -53,7 +53,7 @@ def test_booking():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
     token = sgg_utils.get_token(username, password)
-    bookings = sgg_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'])
+    bookings = sgg_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'], include=['players'])
     print(bookings)
     assert bookings[0]['attributes']['dateBooked'] == BOOKING_TEST_CASE['DATE_BOOKED']
 
@@ -167,5 +167,5 @@ def test_day_bookings():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
     token = sgg_utils.get_token(username, password)
-    bookings = sgg_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], start_date='2023-01-18')
+    bookings = sgg_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], start_date='2023-01-18', include=['players'])
     assert len(bookings) == 104

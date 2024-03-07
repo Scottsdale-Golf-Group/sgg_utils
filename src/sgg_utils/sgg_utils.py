@@ -69,13 +69,19 @@ def get_sale(token, course_id, sale_id, include: list = []):
 
     return content
 
-def get_booking(token, course_id, teesheet_id, booking_id):
+def get_booking(token, course_id, teesheet_id, booking_id, include=[]):
     headers = {
         'Content-Type': 'application/json',
         'x-authorization': f'Bearer {token}'
     }
+
+    if len(include) > 0:
+        included = '?include=' + '&'.join(include)
+    else:
+        included = ''
+
     bookings_data = []
-    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings/{booking_id}', headers=headers)
+    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings/{booking_id}{included}', headers=headers)
 
     try:
         content = json.loads(r.content)
@@ -84,7 +90,6 @@ def get_booking(token, course_id, teesheet_id, booking_id):
 
     if r.status_code == 200 and len(content['data']) > 0:
         bookings_data.append(content['data'])
-        print(content)
 
     return bookings_data
 
@@ -239,7 +244,7 @@ def get_price_class(token, course_id, price_class_id):
     content = json.loads(r.content)
     return content
 
-def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, limit=100):
+def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, limit=100, include=[]):
     '''Accepts a course id, teesheet id and a start date.
     Returns an array of json data for a single day.
     If an end_date is provided, it will return all bookings between the start and end date.'''
@@ -247,6 +252,12 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
         'Content-Type': 'application/json',
         'x-authorization': f'Bearer {token}'
     }
+
+    if len(include) > 0:
+        included = '&include=' + ','.join(include)
+    else:
+        included = ''
+
     sd = datetime.strptime(start_date, '%Y-%m-%d')
     if end_date is None:
         ed = (sd + timedelta(days=1)).strftime('%Y-%m-%d')
@@ -259,7 +270,7 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
     cont = True
     while cont:
         # Make a call to the API
-        r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings?limit={limit}&start={index}&startDate={sd}&endDate={ed}', headers=headers)
+        r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings?limit={limit}&start={index}&startDate={sd}&endDate={ed}{included}', headers=headers)
         try:
             content = json.loads(r.content)
         except json.JSONDecodeError:
