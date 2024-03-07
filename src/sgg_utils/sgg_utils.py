@@ -2,7 +2,6 @@ import requests
 import json
 import logging
 import os
-import pandas as pd
 from datetime import datetime, timedelta
 
 API_URL = 'https://api.foreupsoftware.com/api_rest/index.php'
