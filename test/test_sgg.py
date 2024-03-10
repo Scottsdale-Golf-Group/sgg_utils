@@ -1,5 +1,7 @@
 import os
 from sgg_utils import sgg_utils
+from sgg_utils import cloud_utils
+
 
 SALE_TEST_CASE = {
     'COURSE_ID' : '21488',
@@ -169,3 +171,7 @@ def test_day_bookings():
     token = sgg_utils.get_token(username, password)
     bookings = sgg_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], start_date='2023-01-18', include=['players'])
     assert len(bookings) == 104
+
+def test_secret_manager():
+    secret = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
+    assert secret is not None
