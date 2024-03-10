@@ -1,5 +1,5 @@
 import os
-from sgg_utils import sgg_utils
+from sgg_utils import foreup_utils
 from sgg_utils import cloud_utils
 
 
@@ -33,37 +33,37 @@ BOOKING_TEST_CASE = {
 def test_token():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
-    token = sgg_utils.get_token(username, password)
+    token = foreup_utils.get_token(username, password)
     assert token is not None
 
 def test_courses():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
-    token = sgg_utils.get_token(username, password)
-    courses = sgg_utils.get_courses(token)
+    token = foreup_utils.get_token(username, password)
+    courses = foreup_utils.get_courses(token)
     assert courses is not None
     assert len(courses) > 0
 
 def test_sale():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
-    token = sgg_utils.get_token(username, password)
-    sales = sgg_utils.get_sale(token, SALE_TEST_CASE['COURSE_ID'], SALE_TEST_CASE['SALE_ID'])
+    token = foreup_utils.get_token(username, password)
+    sales = foreup_utils.get_sale(token, SALE_TEST_CASE['COURSE_ID'], SALE_TEST_CASE['SALE_ID'])
     assert sales['data']['attributes']['saleTime'] == SALE_TEST_CASE['SALE_TIME']
 
 def test_booking():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
-    token = sgg_utils.get_token(username, password)
-    bookings = sgg_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'], include=['players'])
+    token = foreup_utils.get_token(username, password)
+    bookings = foreup_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'], include=['players'])
     print(bookings)
     assert bookings[0]['attributes']['dateBooked'] == BOOKING_TEST_CASE['DATE_BOOKED']
 
 def test_teesheet():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
-    token = sgg_utils.get_token(username, password)
-    teesheets = sgg_utils.get_teesheet(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
+    token = foreup_utils.get_token(username, password)
+    teesheets = foreup_utils.get_teesheet(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
 
     assert teesheets['data'] is not None
     assert teesheets['data']['type'] == 'teesheets'
@@ -73,8 +73,8 @@ def test_teesheet():
 def test_seasons():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
-    token = sgg_utils.get_token(username, password)
-    seasons = sgg_utils.get_all_seasons(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
+    token = foreup_utils.get_token(username, password)
+    seasons = foreup_utils.get_all_seasons(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
     #print(seasons['data'][0])
     assert seasons['data'] is not None
     assert len(seasons['data']) > 0
@@ -82,8 +82,8 @@ def test_seasons():
 # def test_seasons_dict():
 #     username = os.environ.get('FOREUP_USER')
 #     password = os.environ.get('FOREUP_PW')
-#     token = sgg_utils.get_token(username, password)
-#     seasons = sgg_utils.get_seasons_dict(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
+#     token = foreup_utils.get_token(username, password)
+#     seasons = foreup_utils.get_seasons_dict(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
 #     print(seasons)
 #     assert seasons is not None
 #     assert len(seasons) > 0
@@ -91,8 +91,8 @@ def test_seasons():
 # def test_season():
 #     username = os.environ.get('FOREUP_USER')
 #     password = os.environ.get('FOREUP_PW')
-#     token = sgg_utils.get_token(username, password)
-#     season = sgg_utils.get_season(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'])
+#     token = foreup_utils.get_token(username, password)
+#     season = foreup_utils.get_season(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'])
 #     print('Season:', season['data']['attributes']['name'])
 #     assert season['data'] is not None
 #     assert len(season) > 0
@@ -100,9 +100,9 @@ def test_seasons():
 # def test_timeframes():
 #     username = os.environ.get('FOREUP_USER')
 #     password = os.environ.get('FOREUP_PW')
-#     token = sgg_utils.get_token(username, password)
-#     timeframes = sgg_utils.get_all_timeframes(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'])
-#     courses = sgg_utils.get_courses(token)
+#     token = foreup_utils.get_token(username, password)
+#     timeframes = foreup_utils.get_all_timeframes(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'])
+#     courses = foreup_utils.get_courses(token)
 #     # print(courses[BOOKING_TEST_CASE['COURSE_ID']])
 #     # print(timeframes)
 #     assert timeframes['data'] is not None
@@ -111,11 +111,11 @@ def test_seasons():
 # def test_timeframe():
 #     username = os.environ.get('FOREUP_USER')
 #     password = os.environ.get('FOREUP_PW')
-#     token = sgg_utils.get_token(username, password)
-#     timeframes = sgg_utils.get_all_timeframes(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'])
+#     token = foreup_utils.get_token(username, password)
+#     timeframes = foreup_utils.get_all_timeframes(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'])
 #     timeframe_id = timeframes['data'][0]['id']
-#     timeframes = sgg_utils.get_timeframe(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'], timeframe_id)
-#     courses = sgg_utils.get_courses(token)
+#     timeframes = foreup_utils.get_timeframe(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'], timeframe_id)
+#     courses = foreup_utils.get_courses(token)
 #     print(courses[BOOKING_TEST_CASE['COURSE_ID']])
 #     print('Season:', BOOKING_TEST_CASE['SEASON_ID'])
 #     print('Timeframe:', timeframes)
@@ -126,9 +126,9 @@ def test_seasons():
 # def test_timeframe_dict():
 #     username = os.environ.get('FOREUP_USER')
 #     password = os.environ.get('FOREUP_PW')
-#     token = sgg_utils.get_token(username, password)
-#     timeframes = sgg_utils.get_timeframe_dict(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'])
-#     courses = sgg_utils.get_courses(token)
+#     token = foreup_utils.get_token(username, password)
+#     timeframes = foreup_utils.get_timeframe_dict(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['SEASON_ID'])
+#     courses = foreup_utils.get_courses(token)
 #     print(courses[BOOKING_TEST_CASE['COURSE_ID']])
 #     print('Number of timeframes:', len(timeframes))
 #     for key, value in timeframes.items():
@@ -139,8 +139,8 @@ def test_seasons():
 def test_pricing():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
-    token = sgg_utils.get_token(username, password)
-    pricing = sgg_utils.get_pricing(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'])
+    token = foreup_utils.get_token(username, password)
+    pricing = foreup_utils.get_pricing(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'])
     print(pricing)
     assert pricing['data'] is not None
     assert len(pricing) > 0
@@ -148,9 +148,9 @@ def test_pricing():
 def test_price_class():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
-    token = sgg_utils.get_token(username, password)
-    price_class = sgg_utils.get_price_class(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['PRICE_CLASS_ID'])
-    courses = sgg_utils.get_courses(token)
+    token = foreup_utils.get_token(username, password)
+    price_class = foreup_utils.get_price_class(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['PRICE_CLASS_ID'])
+    courses = foreup_utils.get_courses(token)
     print(courses[BOOKING_TEST_CASE['COURSE_ID']])
     print(price_class)
     assert price_class['data'] is not None
@@ -159,8 +159,8 @@ def test_price_class():
 # def test_backfill_bookings():
 #     username = os.environ.get('FOREUP_USER')
 #     password = os.environ.get('FOREUP_PW')
-#     token = sgg_utils.get_token(username, password)
-#     bookings = sgg_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], sd='2023-07-30', ed='2023-07-31', include = ['players'], verbose=True)
+#     token = foreup_utils.get_token(username, password)
+#     bookings = foreup_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], sd='2023-07-30', ed='2023-07-31', include = ['players'], verbose=True)
     
 #     assert bookings is not None
 #     assert len(bookings) > 0
@@ -168,8 +168,8 @@ def test_price_class():
 def test_day_bookings():
     username = os.environ.get('FOREUP_USER')
     password = os.environ.get('FOREUP_PW')
-    token = sgg_utils.get_token(username, password)
-    bookings = sgg_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], start_date='2023-01-18', include=['players'])
+    token = foreup_utils.get_token(username, password)
+    bookings = foreup_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], start_date='2023-01-18', include=['players'])
     assert len(bookings) == 104
 
 def test_secret_manager():
