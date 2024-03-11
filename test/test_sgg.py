@@ -51,13 +51,13 @@ JSON_LIST_EXAMPLE = [
 
 def test_token():
     username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     assert token is not None
 
 def test_courses():
     username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     courses = foreup_utils.get_courses(token)
     assert courses is not None
@@ -65,14 +65,14 @@ def test_courses():
 
 def test_sale():
     username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     sales = foreup_utils.get_sale(token, SALE_TEST_CASE['COURSE_ID'], SALE_TEST_CASE['SALE_ID'])
     assert sales['data']['attributes']['saleTime'] == SALE_TEST_CASE['SALE_TIME']
 
 def test_booking():
     username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     bookings = foreup_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'], include=['players'])
     print(bookings)
@@ -81,7 +81,7 @@ def test_booking():
 
 def test_teesheet():
     username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     teesheets = foreup_utils.get_teesheet(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
 
@@ -92,7 +92,7 @@ def test_teesheet():
 
 def test_seasons():
     username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     seasons = foreup_utils.get_all_seasons(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
     #print(seasons['data'][0])
@@ -158,7 +158,7 @@ def test_seasons():
 
 def test_pricing():
     username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     pricing = foreup_utils.get_pricing(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'])
     print(pricing)
@@ -167,7 +167,7 @@ def test_pricing():
 
 def test_price_class():
     username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     price_class = foreup_utils.get_price_class(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['PRICE_CLASS_ID'])
     courses = foreup_utils.get_courses(token)
@@ -187,13 +187,13 @@ def test_price_class():
     
 def test_day_bookings():
     username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     bookings = foreup_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], start_date='2023-01-18', include=['players'])
     assert len(bookings) == 104
 
 def test_secret_manager():
-    secret = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
+    secret = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     assert secret is not None
 
 def test_list_to_cloud_storage():
