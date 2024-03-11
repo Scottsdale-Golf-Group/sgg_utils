@@ -43,4 +43,6 @@ jobs:
         project_id: 'foreup'
         workload_identity_provider: 'projects/593748364912/locations/global/workloadIdentityPools/github/providers/github-action'   
         service_account: ${{ secrets.GCP_SA }}
-
+    - name: Test with pytest
+      run: |
+        pytest
