@@ -5,5 +5,5 @@ Using virtual environments is recommended (see https://docs.python.org/3/library
 
 Pip install:
 
-`pip install git+https://github.com/michaeldfutch/sgg_utils.git`
+`pip install git+https://github.com/Scottsdale-Golf-Group/sgg_utils.git`
 
