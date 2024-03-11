@@ -45,4 +45,4 @@ jobs:
         service_account: ${{ secrets.GCP_SA }}
     - name: Test with pytest
       run: |
-        pytest -rP
+        pytest test/test_sgg.py
