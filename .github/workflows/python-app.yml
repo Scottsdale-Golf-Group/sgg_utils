@@ -17,6 +17,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.10
@@ -38,6 +41,7 @@ jobs:
       with:
         project_id: 'foreup'
         workload_identity_provider: 'projects/593748364912/locations/global/workloadIdentityPools/github/providers/github-action'   
+        service_account: ${{ secrets.GCP_SA }}
     - name: Test with pytest
       run: |
         pytest
