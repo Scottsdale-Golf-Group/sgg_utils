@@ -9,6 +9,7 @@ google-cloud-bigquery==3.17.2
 google-cloud-bigquery-storage==2.24.0
 google-cloud-core==2.4.1
 google-cloud-secret-manager==2.18.3
+google-cloud-storage==2.15.0
 google-crc32c==1.5.0
 google-resumable-media==2.7.0
 googleapis-common-protos==1.62.0
@@ -35,7 +36,7 @@ pytz==2024.1
 requests==2.31.0
 requests-oauthlib==1.3.1
 rsa==4.9
--e git+https://github.com/michaeldfutch/sgg_utils.git@6fa65764ce717ae1fd7848db6b2495651ef5dbc2#egg=sgg_utils
+-e git+https://github.com/michaeldfutch/sgg_utils.git@6bfb5d195b9606b593b1390e2f969f4ffcc69515#egg=sgg_utils
 six==1.16.0
 tzdata==2024.1
 urllib3==2.2.0

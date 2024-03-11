@@ -1,7 +1,7 @@
 import os
 from sgg_utils import foreup_utils
 from sgg_utils import cloud_utils
-
+import json
 
 SALE_TEST_CASE = {
     'COURSE_ID' : '21488',
@@ -27,6 +27,27 @@ BOOKING_TEST_CASE = {
     'TIMEFRAME_ID': '12758675',
     'PRICE_CLASS_ID': '36150',
 }
+
+JSON_LIST_EXAMPLE = [
+    {
+        "id": "1",
+        "name": "John",
+        "age": "21",
+        "city": "New York"
+    },
+    {
+        "id": "2",
+        "name": "Danny",
+        "age": "25",
+        "city": "Los Angeles"
+    },
+    {
+        "id": "3",
+        "name": "Emma",
+        "age": "28",
+        "city": "Miami"
+    }
+]
 
 
 
@@ -57,6 +78,7 @@ def test_booking():
     token = foreup_utils.get_token(username, password)
     bookings = foreup_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'], include=['players'])
     print(bookings)
+    print(type(bookings[0]))
     assert bookings[0]['attributes']['dateBooked'] == BOOKING_TEST_CASE['DATE_BOOKED']
 
 def test_teesheet():
@@ -175,3 +197,7 @@ def test_day_bookings():
 def test_secret_manager():
     secret = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "1")
     assert secret is not None
+
+def test_list_to_cloud_storage():
+    response = cloud_utils.list_to_cloud_storage('sgg-test-bucket', JSON_LIST_EXAMPLE, 'test.json', timestamp=False)
+    assert response == 'File test.json uploaded to sgg-test-bucket.'
