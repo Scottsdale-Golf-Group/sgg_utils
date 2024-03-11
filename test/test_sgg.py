@@ -88,7 +88,6 @@ def test_teesheet():
     assert teesheets['data'] is not None
     assert teesheets['data']['type'] == 'teesheets'
 
-
 def test_seasons():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
