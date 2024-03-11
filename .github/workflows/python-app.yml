@@ -21,7 +21,9 @@ jobs:
       contents: read
       id-token: write
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v2
+      with:
+        ref: master
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
       with:
