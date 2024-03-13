@@ -69,7 +69,7 @@ def test_sale():
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     sales = foreup_utils.get_sale(token, SALE_TEST_CASE['COURSE_ID'], SALE_TEST_CASE['SALE_ID'])
-    assert sales['data']['attributes']['saleTime'] == SALE_TEST_CASE['SALE_TIME']
+    assert sales[0]['attributes']['saleTime'] == SALE_TEST_CASE['SALE_TIME']
 
 def test_booking():
     username = 'mfutch78@gmail.com'

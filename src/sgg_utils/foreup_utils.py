@@ -47,8 +47,7 @@ def get_courses(token):
 
     return courses
 
-def get_sale(token, course_id, sale_id, include: list = []):
-
+def get_sale(token, course_id, sale_id, include=[]):
     headers = {
         'Content-Type': 'application/json',
         'x-authorization': f'Bearer {token}'
@@ -59,15 +58,18 @@ def get_sale(token, course_id, sale_id, include: list = []):
     else:
         included = ''
 
+    sales_data = []
     r = requests.get(f'{API_URL}/courses/{course_id}/sales/{sale_id}{included}', headers=headers)
-    
-    # Check if the response contains valid JSON
+
     try:
         content = json.loads(r.content)
     except json.JSONDecodeError:
         logging.error(f'Error: {r.status_code}')
 
-    return content
+    if r.status_code == 200 and len(content['data']) > 0:
+        sales_data.append(content['data'])
+
+    return sales_data
 
 def get_booking(token, course_id, teesheet_id, booking_id, include=[]):
     headers = {
