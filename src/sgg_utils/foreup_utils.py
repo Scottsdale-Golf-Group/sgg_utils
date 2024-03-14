@@ -300,7 +300,31 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
 
     return bookings_data
 
+def get_customers(token, course_id, limit = 100, testing=False):
+    '''get customer from foreup api'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    start = 0
+    cont = True
+    customers = []
+    while cont:
+        r = requests.get(f'{API_URL}/courses/{course_id}/customers?start={start}&limit={limit}', headers=headers)
+        content = json.loads(r.content)
 
+        if r.status_code == 200 and len(content['data']) > 0:
+            customers.extend(content['data'])
+            if len(content['data']) < limit:
+                cont = False
+            else:
+                start += limit
+
+        if testing:
+            cont = False
+
+    return customers
+    
 def backfill_bookings(token, bucket, start_date, end_date = None, course_id = None, include=[]):
     '''Accepts a storage bucket, course id and a start/end date.
     Writes newline delim json to storage bucket using course_id/teesheet_id as folders.'''

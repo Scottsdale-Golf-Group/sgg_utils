@@ -204,3 +204,11 @@ def test_backfill_bookings():
     token = foreup_utils.get_token(username, password)
     response = foreup_utils.backfill_bookings(token, bucket='sgg-test-bucket', start_date='2023-01-01', end_date='2023-01-04')
     assert response == 200
+
+def test_get_customers():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    customers = foreup_utils.get_customers(token, '21561', testing=True)
+    assert customers[0]['type'] == 'customers'
+    assert len(customers) > 0
