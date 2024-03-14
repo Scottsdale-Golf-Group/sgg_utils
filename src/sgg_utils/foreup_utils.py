@@ -290,7 +290,7 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
 
             ## end if results are less than limit, else increment the index
             if len(content['data']) < limit:
-                print("No more results")
+                print(f"No more results for {course_id}")
                 break
             else:
                 index += limit
@@ -301,7 +301,7 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
     return bookings_data
 
 
-def backfill_bookings(token, bucket, start_date, end_date = None, course_id = None):
+def backfill_bookings(token, bucket, start_date, end_date = None, course_id = None, include=[]):
     '''Accepts a storage bucket, course id and a start/end date.
     Writes newline delim json to storage bucket using course_id/teesheet_id as folders.'''
 
@@ -316,7 +316,7 @@ def backfill_bookings(token, bucket, start_date, end_date = None, course_id = No
 
         for teesheet in teesheets['data']:
             # get bookings data (this list could get long and is held in memory...maybe a better way to handle this)
-            bookings_data = get_bookings(token, course, teesheet['id'], start_date=start_date, end_date=end_date)
+            bookings_data = get_bookings(token, course, teesheet['id'], start_date=start_date, end_date=end_date, include=include)
             # write bookings data
             response = cloud_utils.list_to_cloud_storage(f'{bucket}', bookings_data, filename=f'bookings/batch/{course}/{teesheet["id"]}/bookings_{start_date}_{end_date}.json', timestamp=False)
             if response is None:
