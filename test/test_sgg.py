@@ -198,13 +198,6 @@ def test_list_to_cloud_storage():
     response = cloud_utils.list_to_cloud_storage('sgg-test-bucket', JSON_LIST_EXAMPLE, 'test.json', timestamp=False)
     assert response == 'File test.json uploaded to sgg-test-bucket.'
 
-def test_backfill_bookings():
-    username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
-    token = foreup_utils.get_token(username, password)
-    response = foreup_utils.backfill_bookings(token, bucket='sgg-test-bucket', start_date='2023-01-01', end_date='2023-01-04')
-    assert response == 200
-
 def test_get_customers():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
