@@ -319,6 +319,7 @@ def get_customers(token, course_id, limit = 100, testing=False):
                 cont = False
             else:
                 start += limit
+                print(f"Getting customers for {course_id} - {start} customers so far.")
         if testing:
             cont = False
 
