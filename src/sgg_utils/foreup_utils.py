@@ -300,7 +300,7 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
 
     return bookings_data
 
-def get_customers(token, course_id, limit = 100, testing=False):
+def get_customers(token, course_id, limit = 1000, testing=False):
     '''get customer from foreup api'''
     headers = {
         'Content-Type': 'application/json',
