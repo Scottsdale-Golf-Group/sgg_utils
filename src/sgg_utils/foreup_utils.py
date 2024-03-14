@@ -3,6 +3,7 @@ import json
 import logging
 import os
 from datetime import datetime, timedelta
+from sgg_utils import cloud_utils
 
 API_URL = 'https://api.foreupsoftware.com/api_rest/index.php'
 
@@ -298,6 +299,29 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
             cont = False
 
     return bookings_data
+
+
+def backfill_bookings(token, bucket, start_date, end_date = None, course_id = None):
+    '''Accepts a storage bucket, course id and a start/end date.
+    Writes newline delim json to storage bucket using course_id/teesheet_id as folders.'''
+
+    if course_id is None:
+        course_ids = get_courses(token).keys()
+    else:
+        course_ids = [course_id]
+    
+    for course in course_ids:
+
+        teesheets = get_all_teesheets(token, course)
+
+        for teesheet in teesheets['data']:
+            # get bookings data (this list could get long and is held in memory...maybe a better way to handle this)
+            bookings_data = get_bookings(token, course, teesheet['id'], start_date=start_date, end_date=end_date)
+            # write bookings data
+            response = cloud_utils.list_to_cloud_storage(f'{bucket}', bookings_data, filename=f'bookings/batch/{course}/{teesheet["id"]}/bookings_{start_date}_{end_date}.json', timestamp=False)
+            if response is None:
+                return 400
+    return 200
 
 
 
