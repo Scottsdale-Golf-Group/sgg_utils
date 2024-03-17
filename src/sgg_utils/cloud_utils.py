@@ -24,13 +24,5 @@ def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False, 
         filename = filename.split('.')[0]
         filename = f'{filename}_{datetime.now().strftime("%Y%m%d%H%M%S")}.json'
     blob = bucket.blob(filename)
-    for _ in range(5):  # Retry up to 5 times
-        try:
-            print("Uploading file...attempt ", _+1 )
-            # Your existing code here...
-            blob.upload_from_string('\n'.join(json.dumps(item) for item in list_of_dict), timeout=timeout)
-            break  # If the upload succeeds, break out of the loop
-        except ConnectionError:
-            print("ConnectionError occurred. Retrying...")
-            time.sleep(5) 
+    blob.upload_from_string('\n'.join(json.dumps(item) for item in list_of_dict), timeout=timeout)
     return f'File {filename} uploaded to {bucket_name}.'
