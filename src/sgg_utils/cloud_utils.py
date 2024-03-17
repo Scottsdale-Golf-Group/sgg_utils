@@ -13,7 +13,7 @@ def access_secret_version(project_id, secret_id, version_id):
     return response.payload.data.decode('UTF-8')
 
 
-def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False):
+def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False, timeout=300):
     from google.cloud import storage
     import json
     import time
@@ -28,7 +28,7 @@ def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False):
         try:
             print("Uploading file...attempt ", _+1 )
             # Your existing code here...
-            blob.upload_from_string('\n'.join(json.dumps(item) for item in list_of_dict))
+            blob.upload_from_string('\n'.join(json.dumps(item) for item in list_of_dict), timeout=timeout)
             break  # If the upload succeeds, break out of the loop
         except ConnectionError:
             print("ConnectionError occurred. Retrying...")
