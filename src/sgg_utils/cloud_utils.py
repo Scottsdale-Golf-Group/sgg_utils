@@ -16,6 +16,7 @@ def access_secret_version(project_id, secret_id, version_id):
 def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False):
     from google.cloud import storage
     import json
+    import time
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     if timestamp:
@@ -23,5 +24,12 @@ def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False):
         filename = filename.split('.')[0]
         filename = f'{filename}_{datetime.now().strftime("%Y%m%d%H%M%S")}.json'
     blob = bucket.blob(filename)
-    blob.upload_from_string('\n'.join(json.dumps(item) for item in list_of_dict))
+    for _ in range(5):  # Retry up to 5 times
+        try:
+            # Your existing code here...
+            blob.upload_from_string('\n'.join(json.dumps(item) for item in list_of_dict))
+            break  # If the upload succeeds, break out of the loop
+        except ConnectionError:
+            print("ConnectionError occurred. Retrying...")
+            time.sleep(5) 
     return f'File {filename} uploaded to {bucket_name}.'
