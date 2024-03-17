@@ -26,6 +26,7 @@ def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False):
     blob = bucket.blob(filename)
     for _ in range(5):  # Retry up to 5 times
         try:
+            print("Uploading file...attempt ", _+1 )
             # Your existing code here...
             blob.upload_from_string('\n'.join(json.dumps(item) for item in list_of_dict))
             break  # If the upload succeeds, break out of the loop
