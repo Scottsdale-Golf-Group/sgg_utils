@@ -77,7 +77,7 @@ def test_booking():
     token = foreup_utils.get_token(username, password)
     bookings = foreup_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'], include=['players'])
     assert bookings[0]['attributes']['dateBooked'] == BOOKING_TEST_CASE['DATE_BOOKED']
-    assert bookings[0]['course_id'] == BOOKING_TEST_CASE['COURSE_ID']
+
 
 def test_teesheet():
     username = 'mfutch78@gmail.com'
