@@ -76,9 +76,8 @@ def test_booking():
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     bookings = foreup_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'], include=['players'])
-    print(bookings)
-    print(type(bookings[0]))
     assert bookings[0]['attributes']['dateBooked'] == BOOKING_TEST_CASE['DATE_BOOKED']
+
 
 def test_teesheet():
     username = 'mfutch78@gmail.com'
@@ -198,3 +197,11 @@ def test_secret_manager():
 def test_list_to_cloud_storage():
     response = cloud_utils.list_to_cloud_storage('sgg-test-bucket', JSON_LIST_EXAMPLE, 'test.json', timestamp=False)
     assert response == 'File test.json uploaded to sgg-test-bucket.'
+
+def test_get_customers():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    customers = foreup_utils.get_customers(token, '21561', testing=True)
+    assert customers[0]['type'] == 'customers'
+    assert len(customers) > 0

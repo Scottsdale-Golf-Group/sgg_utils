@@ -3,6 +3,7 @@ import json
 import logging
 import os
 from datetime import datetime, timedelta
+from sgg_utils import cloud_utils
 
 API_URL = 'https://api.foreupsoftware.com/api_rest/index.php'
 
@@ -286,7 +287,7 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
 
             ## end if results are less than limit, else increment the index
             if len(content['data']) < limit:
-                print("No more results")
+                print(f"No more results for {course_id}")
                 break
             else:
                 index += limit
@@ -295,6 +296,31 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
             cont = False
 
     return bookings_data
+
+def get_customers(token, course_id, limit = 100, testing=False):
+    '''get customer from foreup api'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    start = 0
+    cont = True
+    customers = []
+    while cont:
+        r = requests.get(f'{API_URL}/courses/{course_id}/customers?start={start}&limit={limit}', headers=headers)
+        content = json.loads(r.content)
+
+        if r.status_code == 200 and len(content['data']) > 0:
+            customers.extend(content['data'])
+            if len(content['data']) < limit:
+                cont = False
+            else:
+                start += limit
+                print(f"Getting customers for {course_id} - {start} customers so far.")
+        if testing:
+            cont = False
+
+    return customers
 
 
 
