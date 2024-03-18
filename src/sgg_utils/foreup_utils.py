@@ -92,10 +92,7 @@ def get_booking(token, course_id, teesheet_id, booking_id, include=[]):
         logging.error(f'Error: {r.status_code}')
 
     if r.status_code == 200 and len(content['data']) > 0:
-        jsn = content['data']
-        jsn['course_id'] = course_id
-        jsn['teesheet_id'] = teesheet_id
-        bookings_data.append(jsn)
+        bookings_data.append(content['data'])
 
     return bookings_data
 
