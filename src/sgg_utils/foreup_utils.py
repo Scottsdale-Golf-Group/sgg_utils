@@ -121,7 +121,7 @@ def get_customer(token, course_id, customer_id, include=[]):
     }
 
     if len(include) > 0:
-        included = '?include=' + '&'.join(include)
+        included = '?include=' + ','.join(include)
     else:
         included = ''
 
