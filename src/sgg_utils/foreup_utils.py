@@ -55,7 +55,7 @@ def get_sale(token, course_id, sale_id, include=[]):
     }
 
     if len(include) > 0:
-        included = '?include=' + '&'.join(include)
+        included = '?include=' + ','.join(include)
     else:
         included = ''
 
@@ -79,13 +79,12 @@ def get_booking(token, course_id, teesheet_id, booking_id, include=[]):
     }
 
     if len(include) > 0:
-        included = '?include=' + '&'.join(include)
+        included = '?include=' + ','.join(include)
     else:
         included = ''
 
     bookings_data = []
     r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings/{booking_id}{included}', headers=headers)
-
     try:
         content = json.loads(r.content)
     except json.JSONDecodeError:
@@ -102,7 +101,7 @@ def get_teesheet(token, course_id, teesheet_id, include: list = []):
         'x-authorization': f'Bearer {token}'
     }
     if len(include) > 0:
-        included = '?include=' + '&'.join(include)
+        included = '?include=' + ','.join(include)
     else:
         included = ''
 

@@ -68,15 +68,18 @@ def test_sale():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
-    sales = foreup_utils.get_sale(token, SALE_TEST_CASE['COURSE_ID'], SALE_TEST_CASE['SALE_ID'])
+    sales = foreup_utils.get_sale(token, SALE_TEST_CASE['COURSE_ID'], SALE_TEST_CASE['SALE_ID'], include=['items','bookings'])
     assert sales[0]['attributes']['saleTime'] == SALE_TEST_CASE['SALE_TIME']
+    assert sales[0]['relationships'].keys() == {'items', 'bookings'}
 
 def test_booking():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
-    bookings = foreup_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'], include=['players'])
+    bookings = foreup_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'], include=['players','sales'])
+    print(bookings)
     assert bookings[0]['attributes']['dateBooked'] == BOOKING_TEST_CASE['DATE_BOOKED']
+    assert bookings[0]['relationships'].keys() == {'players', 'sales'}
 
 
 def test_teesheet():
@@ -187,8 +190,9 @@ def test_day_bookings():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
-    bookings = foreup_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], start_date='2023-01-18', include=['players'])
+    bookings = foreup_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], start_date='2023-01-18', include=['players', 'sales'])
     assert len(bookings) == 104
+    assert bookings[0]['relationships'].keys() == {'players', 'sales'}
 
 def test_secret_manager():
     secret = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
