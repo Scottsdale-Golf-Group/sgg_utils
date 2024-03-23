@@ -209,3 +209,11 @@ def test_get_customers():
     customers = foreup_utils.get_customers(token, '21561', testing=True)
     assert customers[0]['type'] == 'customers'
     assert len(customers) > 0
+
+def test_get_sales():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    sales = foreup_utils.get_sales(token, '21561', start_date='2023-01-18', end_date='2023-01-19', include=['items','bookings'])
+    assert sales[0]['type'] == 'sales'
+    assert sales[0]['relationships'].keys() == {'items', 'bookings'}

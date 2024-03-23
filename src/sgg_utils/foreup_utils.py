@@ -296,6 +296,57 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
 
     return bookings_data
 
+
+def get_sales(token, course_id, start_date, end_date = None, limit=100, include=[]):
+    '''Accepts a course id, teesheet id and a start date.
+    Returns an array of json data for a single day.
+    If an end_date is provided, it will return all bookings between the start and end date.'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+
+    if len(include) > 0:
+        included = '&include=' + ','.join(include)
+    else:
+        included = ''
+
+    sd = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date is None:
+        ed = (sd + timedelta(days=1)).strftime('%Y-%m-%d')
+    else:
+        ed = end_date
+
+    index = 0
+    sales_data = []
+
+    cont = True
+    while cont:
+        # Make a call to the API
+        r = requests.get(f'{API_URL}/courses/{course_id}/sales?limit={limit}&start={index}&startDate={sd}&endDate={ed}{included}', headers=headers)
+        try:
+            content = json.loads(r.content)
+        except json.JSONDecodeError:
+            print("Error: Invalid JSON response.")
+            cont = False
+            continue
+
+        # Check that there is content
+        if r.status_code == 200 and len(content['data']) > 0:
+            sales_data.extend(content['data'])
+
+            ## end if results are less than limit, else increment the index
+            if len(content['data']) < limit:
+                print(f"No more results for {course_id}")
+                break
+            else:
+                index += limit
+        else:
+            print("Final status code:", r.status_code)
+            cont = False
+
+    return sales_data
+
 def get_customers(token, course_id, limit = 100, testing=False):
     '''get customer from foreup api'''
     headers = {
