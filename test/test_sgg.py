@@ -217,3 +217,10 @@ def test_get_sales():
     sales = foreup_utils.get_sales(token, '21561', start_date='2023-01-18', end_date='2023-01-19', include=['items','bookings'])
     assert sales[0]['type'] == 'sales'
     assert sales[0]['relationships'].keys() == {'items', 'bookings'}
+
+def test_get_items():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    items = foreup_utils.get_items(token, '21561', include=['upcs', 'itemModifiers', 'itemSides'])
+    assert items[0]['type'] == 'items'
