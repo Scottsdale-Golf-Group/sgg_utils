@@ -90,7 +90,14 @@ def test_teesheet():
     assert teesheets['data']['type'] == 'teesheets'
 
 def test_customers():
-    
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    customers = foreup_utils.get_customer(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
+    assert isinstance(customers, list), "Customers should be returned as a list"
+    assert len(customers) > 0, "There should be at least one customer returned"
+    assert 'customer_id' in customers[0], "Customer data should contain a 'customer_id'"
+    assert 'name' in customers[0], "Customer data should contain a 'name'"
 
 def test_seasons():
     username = 'mfutch78@gmail.com'
