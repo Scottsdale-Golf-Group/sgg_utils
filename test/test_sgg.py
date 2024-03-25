@@ -28,6 +28,8 @@ BOOKING_TEST_CASE = {
     'PRICE_CLASS_ID': '36150',
 }
 
+ITEM_TEST_CASE = {"course_id": "21488", "id": "2363750"}
+
 JSON_LIST_EXAMPLE = [
     {
         "id": "1",
@@ -224,3 +226,10 @@ def test_get_items():
     token = foreup_utils.get_token(username, password)
     items = foreup_utils.get_items(token, '21561', include=['upcs', 'itemModifiers', 'itemSides'])
     assert items[0]['type'] == 'items'
+
+def test_get_item():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    item = foreup_utils.get_item(token, ITEM_TEST_CASE['course_id'], ITEM_TEST_CASE['id'])
+    assert item[0]['type'] == 'items'

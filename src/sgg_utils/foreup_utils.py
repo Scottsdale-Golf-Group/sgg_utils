@@ -402,3 +402,22 @@ def get_items(token, course_id, include = [], limit = 100, testing=False):
             cont = False
 
     return items
+
+def get_item(token, course_id, item_id):
+    '''get customer from foreup api'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+
+    item = []
+    r = requests.get(f'{API_URL}/courses/{course_id}/items/{item_id}', headers=headers)
+    try:
+        content = json.loads(r.content)
+    except json.JSONDecodeError:
+        logging.error(f'Error: {r.status_code}')
+
+    if r.status_code == 200 and len(content['data']) > 0:
+        item.append(content['data'])
+
+    return item
