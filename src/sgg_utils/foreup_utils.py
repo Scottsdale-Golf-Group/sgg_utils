@@ -59,7 +59,6 @@ def get_sale(token, course_id, sale_id, include=[]):
     else:
         included = ''
 
-    sales_data = []
     r = requests.get(f'{API_URL}/courses/{course_id}/sales/{sale_id}{included}', headers=headers)
 
     try:
@@ -67,10 +66,7 @@ def get_sale(token, course_id, sale_id, include=[]):
     except json.JSONDecodeError:
         logging.error(f'Error: {r.status_code}')
 
-    if r.status_code == 200 and len(content['data']) > 0:
-        sales_data.append(content['data'])
-
-    return sales_data
+    return content
 
 def get_booking(token, course_id, teesheet_id, booking_id, include=[]):
     headers = {
@@ -83,17 +79,13 @@ def get_booking(token, course_id, teesheet_id, booking_id, include=[]):
     else:
         included = ''
 
-    bookings_data = []
     r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings/{booking_id}{included}', headers=headers)
     try:
         content = json.loads(r.content)
     except json.JSONDecodeError:
         logging.error(f'Error: {r.status_code}')
 
-    if r.status_code == 200 and len(content['data']) > 0:
-        bookings_data.append(content['data'])
-
-    return bookings_data
+    return content
 
 def get_teesheet(token, course_id, teesheet_id, include: list = []):
     headers = {
@@ -267,7 +259,7 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
         ed = end_date
 
     index = 0
-    bookings_data = []
+    bookings_data = {'data': [], 'included': []}
 
     cont = True
     while cont:
@@ -282,7 +274,8 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
 
         # Check that there is content
         if r.status_code == 200 and len(content['data']) > 0:
-            bookings_data.extend(content['data'])
+            bookings_data['data'].extend(content['data'])
+            bookings_data['included'].extend(content['included'])
 
             ## end if results are less than limit, else increment the index
             if len(content['data']) < limit:
@@ -318,7 +311,7 @@ def get_sales(token, course_id, start_date, end_date = None, limit=100, include=
         ed = end_date
 
     index = 0
-    sales_data = []
+    sales_data = {'data': [], 'included': []}
 
     cont = True
     while cont:
@@ -333,8 +326,8 @@ def get_sales(token, course_id, start_date, end_date = None, limit=100, include=
 
         # Check that there is content
         if r.status_code == 200 and len(content['data']) > 0:
-            sales_data.extend(content['data'])
-
+            sales_data['data'].extend(content['data'])
+            sales_data['included'].extend(content['included'])
             ## end if results are less than limit, else increment the index
             if len(content['data']) < limit:
                 print(f"No more results for {course_id}")
@@ -355,13 +348,13 @@ def get_customers(token, course_id, limit = 100, testing=False):
     }
     start = 0
     cont = True
-    customers = []
+    customers = {'data': []}
     while cont:
         r = requests.get(f'{API_URL}/courses/{course_id}/customers?start={start}&limit={limit}', headers=headers)
         content = json.loads(r.content)
 
         if r.status_code == 200 and len(content['data']) > 0:
-            customers.extend(content['data'])
+            customers['data'].extend(content['data'])
             if len(content['data']) < limit:
                 cont = False
             else:

@@ -71,17 +71,17 @@ def test_sale():
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     sales = foreup_utils.get_sale(token, SALE_TEST_CASE['COURSE_ID'], SALE_TEST_CASE['SALE_ID'], include=['items','bookings'])
-    assert sales[0]['attributes']['saleTime'] == SALE_TEST_CASE['SALE_TIME']
-    assert sales[0]['relationships'].keys() == {'items', 'bookings'}
+    print(sales)
+    assert sales['data']['attributes']['saleTime'] == SALE_TEST_CASE['SALE_TIME']
+    assert sales['data']['relationships'].keys() == {'items', 'bookings'}
 
 def test_booking():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     bookings = foreup_utils.get_booking(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'], include=['players','sales'])
-    print(bookings)
-    assert bookings[0]['attributes']['dateBooked'] == BOOKING_TEST_CASE['DATE_BOOKED']
-    assert bookings[0]['relationships'].keys() == {'players', 'sales'}
+    assert bookings['data']['attributes']['dateBooked'] == BOOKING_TEST_CASE['DATE_BOOKED']
+    assert bookings['data']['relationships'].keys() == {'players', 'sales'}
 
 
 def test_teesheet():
@@ -98,7 +98,6 @@ def test_seasons():
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     seasons = foreup_utils.get_all_seasons(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
-    #print(seasons['data'][0])
     assert seasons['data'] is not None
     assert len(seasons['data']) > 0
 
@@ -164,7 +163,6 @@ def test_pricing():
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     pricing = foreup_utils.get_pricing(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], BOOKING_TEST_CASE['BOOKING_ID'])
-    print(pricing)
     assert pricing['data'] is not None
     assert len(pricing) > 0
 
@@ -174,8 +172,6 @@ def test_price_class():
     token = foreup_utils.get_token(username, password)
     price_class = foreup_utils.get_price_class(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['PRICE_CLASS_ID'])
     courses = foreup_utils.get_courses(token)
-    print(courses[BOOKING_TEST_CASE['COURSE_ID']])
-    print(price_class)
     assert price_class['data'] is not None
     assert len(price_class) > 0
 
@@ -188,13 +184,13 @@ def test_price_class():
 #     assert bookings is not None
 #     assert len(bookings) > 0
     
-def test_day_bookings():
+def test_bookings():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     bookings = foreup_utils.get_bookings(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], start_date='2023-01-18', include=['players', 'sales'])
-    assert len(bookings) == 104
-    assert bookings[0]['relationships'].keys() == {'players', 'sales'}
+    assert len(bookings['data']) == 104
+    assert bookings['data'][0]['relationships'].keys() == {'players', 'sales'}
 
 def test_secret_manager():
     secret = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
@@ -209,16 +205,16 @@ def test_get_customers():
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     customers = foreup_utils.get_customers(token, '21561', testing=True)
-    assert customers[0]['type'] == 'customers'
-    assert len(customers) > 0
+    assert customers['data'][0]['type'] == 'customers'
+    assert len(customers['data']) > 0
 
 def test_get_sales():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     sales = foreup_utils.get_sales(token, '21561', start_date='2023-01-18', end_date='2023-01-19', include=['items','bookings'])
-    assert sales[0]['type'] == 'sales'
-    assert sales[0]['relationships'].keys() == {'items', 'bookings'}
+    assert sales['data'][0]['type'] == 'sales'
+    assert sales['data'][0]['relationships'].keys() == {'items', 'bookings'}
 
 def test_get_items():
     username = 'mfutch78@gmail.com'
