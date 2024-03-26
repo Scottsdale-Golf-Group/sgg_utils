@@ -380,13 +380,13 @@ def get_items(token, course_id, include = [], limit = 100, testing=False):
     else:
         included = ''
     
-    items = []
+    items = {'data': []}
     while cont:
         r = requests.get(f'{API_URL}/courses/{course_id}/items?start={start}&limit={limit}{included}', headers=headers)
         content = json.loads(r.content)
 
         if r.status_code == 200 and len(content['data']) > 0:
-            items.extend(content['data'])
+            items['data'].extend(content['data'])
             if len(content['data']) < limit:
                 cont = False
             else:
