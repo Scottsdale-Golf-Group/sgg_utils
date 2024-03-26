@@ -221,7 +221,7 @@ def test_get_items():
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
     items = foreup_utils.get_items(token, '21561', include=['upcs', 'itemModifiers', 'itemSides'])
-    assert items[0]['type'] == 'items'
+    assert items['data'][0]['type'] == 'items'
 
 def test_get_item():
     username = 'mfutch78@gmail.com'
