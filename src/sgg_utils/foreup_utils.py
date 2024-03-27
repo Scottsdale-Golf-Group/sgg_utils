@@ -117,7 +117,6 @@ def get_customer(token, course_id, customer_id, include=[]):
     else:
         included = ''
 
-    customer_data = []
     r = requests.get(f'{API_URL}/courses/{course_id}/customers/{customer_id}{included}', headers=headers)
 
     try:
@@ -125,10 +124,7 @@ def get_customer(token, course_id, customer_id, include=[]):
     except json.JSONDecodeError:
         logging.error(f'Error: {r.status_code}')
 
-    if r.status_code == 200 and len(content['data']) > 0:
-        customer_data.append(content['data'])
-
-    return customer_data
+    return content
 
 def get_all_teesheets(token, course_id):
     '''get all teesheets for a course'''

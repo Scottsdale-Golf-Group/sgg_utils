@@ -30,6 +30,12 @@ BOOKING_TEST_CASE = {
 
 ITEM_TEST_CASE = {"course_id": "21488", "id": "2363750"}
 
+CUSTOMER_TEST_CASE = {
+    "type": "customers", 
+     "id": "27396996", 
+     "COURSE_ID" : '21488',
+    }
+
 JSON_LIST_EXAMPLE = [
     {
         "id": "1",
@@ -97,10 +103,9 @@ def test_customers():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
-    customers = foreup_utils.get_customer(token, BOOKING_TEST_CASE['COURSE_ID'])
-    assert isinstance(customers, list), "Customers should be returned as a list"
-    assert 'customer_id' in customers[0], "Customer data should contain a 'customer_id'"
-    assert 'name' in customers[0], "Customer data should contain a 'name'"
+    customers = foreup_utils.get_customer(token, CUSTOMER_TEST_CASE['COURSE_ID'], CUSTOMER_TEST_CASE['id'])
+    assert customers['data']['id'] == CUSTOMER_TEST_CASE['id']
+    assert customers['data']['type'] == 'customers'
 
 def test_seasons():
     username = 'mfutch78@gmail.com'
