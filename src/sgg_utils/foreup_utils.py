@@ -106,6 +106,26 @@ def get_teesheet(token, course_id, teesheet_id, include: list = []):
 
     return content
 
+def get_customer(token, course_id, customer_id, include=[]):
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+
+    if len(include) > 0:
+        included = '?include=' + ','.join(include)
+    else:
+        included = ''
+
+    r = requests.get(f'{API_URL}/courses/{course_id}/customers/{customer_id}{included}', headers=headers)
+
+    try:
+        content = json.loads(r.content)
+    except json.JSONDecodeError:
+        logging.error(f'Error: {r.status_code}')
+
+    return content
+
 def get_all_teesheets(token, course_id):
     '''get all teesheets for a course'''
     headers = {
