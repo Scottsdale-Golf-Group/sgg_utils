@@ -13,9 +13,10 @@ def access_secret_version(project_id, secret_id, version_id):
     return response.payload.data.decode('UTF-8')
 
 
-def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False):
+def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False, timeout=300):
     from google.cloud import storage
     import json
+    import time
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     if timestamp:
@@ -23,5 +24,5 @@ def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False):
         filename = filename.split('.')[0]
         filename = f'{filename}_{datetime.now().strftime("%Y%m%d%H%M%S")}.json'
     blob = bucket.blob(filename)
-    blob.upload_from_string('\n'.join(json.dumps(item) for item in list_of_dict))
+    blob.upload_from_string('\n'.join(json.dumps(item) for item in list_of_dict), timeout=timeout)
     return f'File {filename} uploaded to {bucket_name}.'

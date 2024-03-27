@@ -3,6 +3,7 @@ import json
 import logging
 import os
 from datetime import datetime, timedelta
+from sgg_utils import cloud_utils
 
 API_URL = 'https://api.foreupsoftware.com/api_rest/index.php'
 
@@ -54,11 +55,10 @@ def get_sale(token, course_id, sale_id, include=[]):
     }
 
     if len(include) > 0:
-        included = '?include=' + '&'.join(include)
+        included = '?include=' + ','.join(include)
     else:
         included = ''
 
-    sales_data = []
     r = requests.get(f'{API_URL}/courses/{course_id}/sales/{sale_id}{included}', headers=headers)
 
     try:
@@ -66,10 +66,7 @@ def get_sale(token, course_id, sale_id, include=[]):
     except json.JSONDecodeError:
         logging.error(f'Error: {r.status_code}')
 
-    if r.status_code == 200 and len(content['data']) > 0:
-        sales_data.append(content['data'])
-
-    return sales_data
+    return content
 
 def get_booking(token, course_id, teesheet_id, booking_id, include=[]):
     headers = {
@@ -78,22 +75,17 @@ def get_booking(token, course_id, teesheet_id, booking_id, include=[]):
     }
 
     if len(include) > 0:
-        included = '?include=' + '&'.join(include)
+        included = '?include=' + ','.join(include)
     else:
         included = ''
 
-    bookings_data = []
     r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings/{booking_id}{included}', headers=headers)
-
     try:
         content = json.loads(r.content)
     except json.JSONDecodeError:
         logging.error(f'Error: {r.status_code}')
 
-    if r.status_code == 200 and len(content['data']) > 0:
-        bookings_data.append(content['data'])
-
-    return bookings_data
+    return content
 
 def get_teesheet(token, course_id, teesheet_id, include: list = []):
     headers = {
@@ -101,7 +93,7 @@ def get_teesheet(token, course_id, teesheet_id, include: list = []):
         'x-authorization': f'Bearer {token}'
     }
     if len(include) > 0:
-        included = '?include=' + '&'.join(include)
+        included = '?include=' + ','.join(include)
     else:
         included = ''
 
@@ -291,7 +283,7 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
         ed = end_date
 
     index = 0
-    bookings_data = []
+    bookings_data = {'data': [], 'included': []}
 
     cont = True
     while cont:
@@ -306,11 +298,12 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
 
         # Check that there is content
         if r.status_code == 200 and len(content['data']) > 0:
-            bookings_data.extend(content['data'])
+            bookings_data['data'].extend(content['data'])
+            bookings_data['included'].extend(content['included'])
 
             ## end if results are less than limit, else increment the index
             if len(content['data']) < limit:
-                print("No more results")
+                print(f"No more results for {course_id}")
                 break
             else:
                 index += limit
@@ -321,5 +314,127 @@ def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, lim
     return bookings_data
 
 
+def get_sales(token, course_id, start_date, end_date = None, limit=100, include=[]):
+    '''Accepts a course id, teesheet id and a start date.
+    Returns an array of json data for a single day.
+    If an end_date is provided, it will return all bookings between the start and end date.'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+
+    if len(include) > 0:
+        included = '&include=' + ','.join(include)
+    else:
+        included = ''
+
+    sd = datetime.strptime(start_date, '%Y-%m-%d')
+    if end_date is None:
+        ed = (sd + timedelta(days=1)).strftime('%Y-%m-%d')
+    else:
+        ed = end_date
+
+    index = 0
+    sales_data = {'data': [], 'included': []}
+
+    cont = True
+    while cont:
+        # Make a call to the API
+        r = requests.get(f'{API_URL}/courses/{course_id}/sales?limit={limit}&start={index}&startDate={sd}&endDate={ed}{included}', headers=headers)
+        try:
+            content = json.loads(r.content)
+        except json.JSONDecodeError:
+            print("Error: Invalid JSON response.")
+            cont = False
+            continue
+
+        # Check that there is content
+        if r.status_code == 200 and len(content['data']) > 0:
+            sales_data['data'].extend(content['data'])
+            sales_data['included'].extend(content['included'])
+            ## end if results are less than limit, else increment the index
+            if len(content['data']) < limit:
+                print(f"No more results for {course_id}")
+                break
+            else:
+                index += limit
+        else:
+            print("Final status code:", r.status_code)
+            cont = False
+
+    return sales_data
+
+def get_customers(token, course_id, limit = 100, testing=False):
+    '''get customer from foreup api'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    start = 0
+    cont = True
+    customers = {'data': []}
+    while cont:
+        r = requests.get(f'{API_URL}/courses/{course_id}/customers?start={start}&limit={limit}', headers=headers)
+        content = json.loads(r.content)
+
+        if r.status_code == 200 and len(content['data']) > 0:
+            customers['data'].extend(content['data'])
+            if len(content['data']) < limit:
+                cont = False
+            else:
+                start += limit
+                print(f"Getting customers for {course_id} - {start} customers so far.")
+        if testing:
+            cont = False
+
+    return customers
+
+def get_items(token, course_id, include = [], limit = 100, testing=False):
+    '''get customer from foreup api'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    start = 0
+    cont = True
 
 
+    if len(include) > 0:
+        included = '&include=' + ','.join(include)
+    else:
+        included = ''
+    
+    items = {'data': []}
+    while cont:
+        r = requests.get(f'{API_URL}/courses/{course_id}/items?start={start}&limit={limit}{included}', headers=headers)
+        content = json.loads(r.content)
+
+        if r.status_code == 200 and len(content['data']) > 0:
+            items['data'].extend(content['data'])
+            if len(content['data']) < limit:
+                cont = False
+            else:
+                start += limit
+        if testing:
+            cont = False
+
+    return items
+
+def get_item(token, course_id, item_id):
+    '''get customer from foreup api'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+
+    item = []
+    r = requests.get(f'{API_URL}/courses/{course_id}/items/{item_id}', headers=headers)
+    try:
+        content = json.loads(r.content)
+    except json.JSONDecodeError:
+        logging.error(f'Error: {r.status_code}')
+
+    if r.status_code == 200 and len(content['data']) > 0:
+        item.append(content['data'])
+
+    return item
