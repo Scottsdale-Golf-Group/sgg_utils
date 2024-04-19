@@ -446,9 +446,6 @@ def get_special(token, course_id, teesheet_id, special_id):
     content = json.loads(r.content)
     return content
 
-import requests
-import json
-
 def get_specials(token, course_id, teesheet_id, limit=100, testing=False):
     '''get specials from foreup api'''
     headers = {
