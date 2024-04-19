@@ -434,3 +434,14 @@ def get_item(token, course_id, item_id):
         item.append(content['data'])
 
     return item
+
+def get_special(token, course_id, teesheet_id, special_id):
+    '''get special for a teesheet'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    url = f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/specials/{special_id}'
+    r = requests.get(url, headers=headers)
+    content = json.loads(r.content)
+    return content
