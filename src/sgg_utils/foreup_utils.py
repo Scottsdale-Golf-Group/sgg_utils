@@ -445,3 +445,32 @@ def get_special(token, course_id, teesheet_id, special_id):
     r = requests.get(url, headers=headers)
     content = json.loads(r.content)
     return content
+
+import requests
+import json
+
+def get_specials(token, course_id, teesheet_id, limit=100, testing=False):
+    '''get specials from foreup api'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    start = 0
+    cont = True
+    specials = {'data': []}
+    while cont:
+        url = f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/specials?start={start}&limit={limit}'
+        r = requests.get(url, headers=headers)
+        content = json.loads(r.content)
+
+        if r.status_code == 200 and len(content['data']) > 0:
+            specials['data'].extend(content['data'])
+            if len(content['data']) < limit:
+                cont = False
+            else:
+                start += limit
+                print(f"Getting specials for teesheet {teesheet_id} - {start} specials so far.")
+        if testing:
+            cont = False
+
+    return specials
