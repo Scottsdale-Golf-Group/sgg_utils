@@ -455,4 +455,5 @@ def get_specials(token, course_id, teesheet_id, testing=False):
     url = f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/specials'
     r = requests.get(url, headers=headers)
     specials = json.loads(r.content)
+    print(f"Specials retrieved: {len(specials)}")
     return specials
