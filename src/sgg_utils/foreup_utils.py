@@ -69,6 +69,7 @@ def get_sale(token, course_id, sale_id, include=[]):
         logging.error(f'Trying again...')
         time.sleep(5)
         r = requests.get(f'{API_URL}/courses/{course_id}/sales/{sale_id}{included}', headers=headers)
+        logging.error(f'Retry status: {r.status_code}')
         content = json.loads(r.content)
 
     return content
