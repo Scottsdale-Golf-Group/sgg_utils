@@ -446,7 +446,7 @@ def get_special(token, course_id, teesheet_id, special_id):
     content = json.loads(r.content)
     return content
 
-def get_specials(token, course_id, teesheet_id, testing=False):
+def get_specials(token, course_id, teesheet_id):
     '''get specials from foreup api'''
     headers = {
         'Content-Type': 'application/json',
