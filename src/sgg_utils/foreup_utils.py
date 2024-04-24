@@ -447,6 +447,7 @@ def get_special(token, course_id, teesheet_id, special_id):
     return content
 
 def get_specials(token, course_id, teesheet_id, testing=False):
+    #trying this
     '''get specials from foreup api'''
     headers = {
         'Content-Type': 'application/json',
