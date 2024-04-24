@@ -36,6 +36,12 @@ CUSTOMER_TEST_CASE = {
      "COURSE_ID" : '21488',
     }
 
+SPECIAL_TEST_CASE = {
+    'COURSE_ID': '21953',
+    'TEESHEET_ID': '9442',
+    'SPECIAL_ID': '43179'
+}
+
 JSON_LIST_EXAMPLE = [
     {
         "id": "1",
@@ -115,6 +121,22 @@ def test_seasons():
     assert seasons['data'] is not None
     assert len(seasons['data']) > 0
 
+def test_special():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    special = foreup_utils.get_special(token, SPECIAL_TEST_CASE['COURSE_ID'], SPECIAL_TEST_CASE['TEESHEET_ID'], SPECIAL_TEST_CASE['SPECIAL_ID'])
+    assert special is not None
+    assert 'data' in special
+
+def test_specials():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    specials = foreup_utils.get_specials(token, SPECIAL_TEST_CASE['COURSE_ID'], SPECIAL_TEST_CASE['TEESHEET_ID'])
+    assert 'data' in specials
+    assert len(specials['data']) > 0
+    
 # def test_seasons_dict():
 #     username = os.environ.get('FOREUP_USER')
 #     password = os.environ.get('FOREUP_PW')
