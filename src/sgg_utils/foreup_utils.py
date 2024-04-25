@@ -4,6 +4,7 @@ import logging
 import os
 from datetime import datetime, timedelta
 from sgg_utils import cloud_utils
+import time
 
 API_URL = 'https://api.foreupsoftware.com/api_rest/index.php'
 
@@ -65,6 +66,11 @@ def get_sale(token, course_id, sale_id, include=[]):
         content = json.loads(r.content)
     except json.JSONDecodeError:
         logging.error(f'Error: {r.status_code}')
+        logging.error(f'Trying again...')
+        time.sleep(5)
+        r = requests.get(f'{API_URL}/courses/{course_id}/sales/{sale_id}{included}', headers=headers)
+        logging.error(f'Retry status: {r.status_code}')
+        content = json.loads(r.content)
 
     return content
 
