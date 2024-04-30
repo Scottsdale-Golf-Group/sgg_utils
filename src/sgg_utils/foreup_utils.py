@@ -464,3 +464,19 @@ def get_specials(token, course_id, teesheet_id, testing=False):
     specials = json.loads(r.content)
     print(f"Specials retrieved: {len(specials)}")
     return specials
+
+def get_teetime_slots(token, course_id, teesheet_id, params={}):
+    '''Params:
+    startTime, endTime, date, bookingClassId, customerId, priceClassId, holes, scheduleSideId
+    '''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+
+    params = '&'.join([f'{k}={v}' for k,v in params.items()])
+
+    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/teetimes?{params}', headers=headers)
+    content = json.loads(r.content)
+    
+    return content
