@@ -265,3 +265,10 @@ def test_get_item():
     token = foreup_utils.get_token(username, password)
     item = foreup_utils.get_item(token, ITEM_TEST_CASE['course_id'], ITEM_TEST_CASE['id'])
     assert item[0]['type'] == 'items'
+
+def test_get_teetime_slot():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    slots = foreup_utils.get_teetime_slots(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
+    assert slots['data'][0]['type'] == 'teetimeSlot'
