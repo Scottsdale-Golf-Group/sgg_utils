@@ -2,6 +2,9 @@ import os
 from sgg_utils import foreup_utils
 from sgg_utils import cloud_utils
 import json
+from datetime import datetime, timedelta
+
+tomorrow = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
 
 SALE_TEST_CASE = {
     'COURSE_ID' : '21488',
@@ -270,5 +273,6 @@ def test_get_teetime_slot():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
-    slots = foreup_utils.get_teetime_slots(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'])
+    slots = foreup_utils.get_teetime_slots(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], params={'date':tomorrow})
+    print(slots)
     assert slots['data'][0]['type'] == 'teetimeSlot'

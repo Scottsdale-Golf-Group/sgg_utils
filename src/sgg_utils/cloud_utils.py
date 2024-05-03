@@ -17,6 +17,8 @@ def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False, 
     from google.cloud import storage
     import json
     import time
+    from google.cloud.storage.retry import DEFAULT_RETRY
+
     storage_client = storage.Client()
     bucket = storage_client.bucket(bucket_name)
     if timestamp:
@@ -24,5 +26,7 @@ def list_to_cloud_storage(bucket_name, list_of_dict, filename, timestamp=False, 
         filename = filename.split('.')[0]
         filename = f'{filename}_{datetime.now().strftime("%Y%m%d%H%M%S")}.json'
     blob = bucket.blob(filename)
-    blob.upload_from_string('\n'.join(json.dumps(item) for item in list_of_dict), timeout=timeout)
+    modified_retry = DEFAULT_RETRY.with_deadline(500.0)
+    modified_retry = modified_retry.with_delay(initial=1.5, multiplier=1.2, maximum=45.0)
+    blob.upload_from_string('\n'.join(json.dumps(item) for item in list_of_dict), timeout=timeout, retry=modified_retry)
     return f'File {filename} uploaded to {bucket_name}.'
