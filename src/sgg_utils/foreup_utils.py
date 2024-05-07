@@ -482,6 +482,6 @@ def get_teetime_slots(token, course_id, teesheet_id, params={}):
         content = json.loads(r.content)
     except json.JSONDecodeError:
         logging.error(f'Error: {r.status_code}')
-        return r.status_code
+        return {'data': []}
     
     return content
