@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name='sgg_utils'
-version = '0.1.03'
+version = '0.1.04'
 authors = [
   { name="Michael Futch", email="michael.d.futch@gmail.com" },
 ]

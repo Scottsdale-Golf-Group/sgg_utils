@@ -477,6 +477,11 @@ def get_teetime_slots(token, course_id, teesheet_id, params={}):
     params = '&'.join([f'{k}={v}' for k,v in params.items()])
 
     r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/teetimes?{params}', headers=headers)
-    content = json.loads(r.content)
+    
+    try:
+        content = json.loads(r.content)
+    except json.JSONDecodeError:
+        logging.error(f'Error: {r.status_code}')
+        return None
     
     return content
