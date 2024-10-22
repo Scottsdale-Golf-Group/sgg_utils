@@ -485,3 +485,46 @@ def get_teetime_slots(token, course_id, teesheet_id, params={}):
         return None
     
     return content
+
+
+def get_stats(token, course_id, teesheet_id, start: str, end: str):
+    '''get stats for a teesheet'''
+
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+
+    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/stats?start={start}&end={end}', headers=headers)
+
+    try:
+        content = json.loads(r.content)
+    except json.JSONDecodeError:
+        logging.error(f'Error: {r.status_code}')
+        return None
+    
+    return content
+
+def get_hourly_stats(token, course_id, teesheet_id, date):
+    '''get stats for a teesheet'''
+
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+
+    hours = ['05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18']
+
+    hourly_dict = {}
+
+    for hour in hours:
+        r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/stats?start={date}T{hour}:00:00&end={date}T{hour}:59:59', headers=headers)
+        try:
+            content = json.loads(r.content)
+        except json.JSONDecodeError:
+            logging.error(f'Error: {r.status_code}')
+            return None
+
+        hourly_dict[hour] = content
+
+    return hourly_dict

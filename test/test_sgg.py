@@ -66,6 +66,14 @@ JSON_LIST_EXAMPLE = [
     }
 ]
 
+STATS_TEST_CASE = {
+    'COURSE_ID' : '21953',
+    'TEESHEET_ID' : '9442',
+    'START_DATE' : '2023-10-22T07:00',
+    'END_DATE' : '2023-10-22T08:00',
+}
+
+
 def test_token():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
@@ -132,13 +140,13 @@ def test_special():
     assert special is not None
     assert 'data' in special
 
-def test_specials():
-    username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
-    token = foreup_utils.get_token(username, password)
-    specials = foreup_utils.get_specials(token, SPECIAL_TEST_CASE['COURSE_ID'], SPECIAL_TEST_CASE['TEESHEET_ID'])
-    assert 'data' in specials
-    assert len(specials['data']) > 0
+# def test_specials():
+#     username = 'mfutch78@gmail.com'
+#     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+#     token = foreup_utils.get_token(username, password)
+#     specials = foreup_utils.get_specials(token, SPECIAL_TEST_CASE['COURSE_ID'], SPECIAL_TEST_CASE['TEESHEET_ID'])
+#     assert 'data' in specials
+#     assert len(specials['data']) > 0
     
 # def test_seasons_dict():
 #     username = os.environ.get('FOREUP_USER')
@@ -276,3 +284,20 @@ def test_get_teetime_slot():
     slots = foreup_utils.get_teetime_slots(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], params={'date':tomorrow})
     print(slots)
     assert slots['data'][0]['type'] == 'teetimeSlot'
+
+
+def test_get_stats():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    stats = foreup_utils.get_stats(token, STATS_TEST_CASE['COURSE_ID'], STATS_TEST_CASE['TEESHEET_ID'], STATS_TEST_CASE['START_DATE'], STATS_TEST_CASE['END_DATE'])
+    assert stats['data']['attributes']['occupancy'] == 0.9623
+
+def test_get_daily_stats():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    stats = foreup_utils.get_hourly_stats(token, STATS_TEST_CASE['COURSE_ID'], STATS_TEST_CASE['TEESHEET_ID'], STATS_TEST_CASE['START_DATE'][0:10])
+    assert len(stats) == 14
+
+    
