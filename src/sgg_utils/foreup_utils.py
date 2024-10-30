@@ -264,6 +264,16 @@ def get_price_class(token, course_id, price_class_id):
     content = json.loads(r.content)
     return content
 
+def get_all_price_classes(token, course_id):
+    '''get price classes for a course'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    r = requests.get(f'{API_URL}/courses/{course_id}/priceClasses', headers=headers)
+    content = json.loads(r.content)
+    return content
+
 def get_bookings(token, course_id, teesheet_id, start_date, end_date = None, limit=100, include=[]):
     '''Accepts a course id, teesheet id and a start date.
     Returns an array of json data for a single day.
