@@ -475,27 +475,6 @@ def get_specials(token, course_id, teesheet_id, testing=False):
     print(f"Specials retrieved: {len(specials)}")
     return specials
 
-def get_teetime_slots(token, course_id, teesheet_id, params={}):
-    '''Params:
-    startTime, endTime, date, bookingClassId, customerId, priceClassId, holes, scheduleSideId
-    '''
-    headers = {
-        'Content-Type': 'application/json',
-        'x-authorization': f'Bearer {token}'
-    }
-
-    params = '&'.join([f'{k}={v}' for k,v in params.items()])
-
-    r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/teetimes?{params}', headers=headers)
-    
-    try:
-        content = json.loads(r.content)
-    except json.JSONDecodeError:
-        logging.error(f'Error: {r.status_code}')
-        return None
-    
-    return content
-
 
 def get_stats(token, course_id, teesheet_id, start: str, end: str):
     '''get stats for a teesheet'''
@@ -538,3 +517,43 @@ def get_hourly_stats(token, course_id, teesheet_id, date):
         hourly_dict[hour] = content
 
     return hourly_dict
+
+
+def get_teetime_slots(token, course_id, teesheet_id, date: str, start: str, end: str, params={}):
+    '''
+    Get teetimes for a course, teesheet, date, start time, and end time
+    Accepts optional parameters:
+    - bookingClassId
+    - customerId
+    - priceClassId
+    - holes
+    - scheduleSideId
+    Example:
+    params = {
+        'bookingClassId': 1,
+        'customerId': 9039,
+        'priceClassId': 3,
+        'holes': 'Both',
+        'scheduleSideId': 4979
+    }
+    '''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+
+    # Convert params dictionary to query string
+    params_str = '&'.join([f'{k}={v}' for k, v in params.items()])
+
+    # Construct the URL with or without params
+    url = f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/teetimes?date={date}&startTime={start}&endTime={end}'
+    if params_str:
+        url += f'&{params_str}'
+
+    r = requests.get(url, headers=headers)
+
+    if r.status_code != 200:
+        logging.error(f'Error: {r.status_code}')
+        return None
+
+    return r.json()
