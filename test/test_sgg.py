@@ -314,5 +314,5 @@ def test_get_teetimes():
         start = STATS_TEST_CASE['STARTTIME'], 
         end = STATS_TEST_CASE['ENDTIME']
     )
-    print(slots)
-    assert False
+    
+    assert slots['data'][0]['type'] == 'teetimeSlot'
