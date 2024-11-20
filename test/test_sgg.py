@@ -71,6 +71,9 @@ STATS_TEST_CASE = {
     'TEESHEET_ID' : '9442',
     'START_DATE' : '2023-10-22T07:00',
     'END_DATE' : '2023-10-22T08:00',
+    'DATE': '2024-11-22',
+    'STARTTIME': '0700',
+    'ENDTIME': '0800'
 }
 
 
@@ -277,15 +280,6 @@ def test_get_item():
     item = foreup_utils.get_item(token, ITEM_TEST_CASE['course_id'], ITEM_TEST_CASE['id'])
     assert item[0]['type'] == 'items'
 
-def test_get_teetime_slot():
-    username = 'mfutch78@gmail.com'
-    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
-    token = foreup_utils.get_token(username, password)
-    slots = foreup_utils.get_teetime_slots(token, BOOKING_TEST_CASE['COURSE_ID'], BOOKING_TEST_CASE['TEESHEET_ID'], params={'date':tomorrow})
-    print(slots)
-    assert slots['data'][0]['type'] == 'teetimeSlot'
-
-
 def test_get_stats():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
@@ -300,4 +294,25 @@ def test_get_daily_stats():
     stats = foreup_utils.get_hourly_stats(token, STATS_TEST_CASE['COURSE_ID'], STATS_TEST_CASE['TEESHEET_ID'], STATS_TEST_CASE['START_DATE'][0:10])
     assert len(stats) == 14
 
+def test_get_price_classes():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    price_classes = foreup_utils.get_all_price_classes(token, STATS_TEST_CASE['COURSE_ID'])
+    print(price_classes)
+    assert price_classes['data'][0]['type'] == 'priceClass'
     
+def test_get_teetimes():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    slots = foreup_utils.get_teetime_slots(
+        token, 
+        course_id = STATS_TEST_CASE['COURSE_ID'], 
+        teesheet_id = STATS_TEST_CASE['TEESHEET_ID'], 
+        date = STATS_TEST_CASE['DATE'], 
+        start = STATS_TEST_CASE['STARTTIME'], 
+        end = STATS_TEST_CASE['ENDTIME']
+    )
+    print(slots)
+    assert False
