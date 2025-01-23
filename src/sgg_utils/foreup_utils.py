@@ -86,11 +86,21 @@ def get_booking(token, course_id, teesheet_id, booking_id, include=[]):
         included = ''
 
     r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings/{booking_id}{included}', headers=headers)
-    try:
-        content = json.loads(r.content)
-    except json.JSONDecodeError:
-        logging.error(f'Error: {r.status_code}')
 
+    content = False
+    iters = 0
+    while content is False:
+        try:
+            content = json.loads(r.content)
+        except json.JSONDecodeError:
+            logging.error(f'Error: {r.status_code}')
+            logging.error(f'Waiting 5 seconds...')
+            time.sleep(5)
+            r = requests.get(f'{API_URL}/courses/{course_id}/teesheets/{teesheet_id}/bookings/{booking_id}{included}', headers=headers)
+            iters += 1
+            if iters == 5:
+                logging.error(f'Suspending attempts for this booking')
+                return None
     return content
 
 def get_teesheet(token, course_id, teesheet_id, include: list = []):

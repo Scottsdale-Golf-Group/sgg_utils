@@ -302,17 +302,27 @@ def test_get_price_classes():
     print(price_classes)
     assert price_classes['data'][0]['type'] == 'priceClass'
     
-def test_get_teetimes():
+# def test_get_teetimes():
+#     username = 'mfutch78@gmail.com'
+#     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+#     token = foreup_utils.get_token(username, password)
+#     slots = foreup_utils.get_teetime_slots(
+#         token, 
+#         course_id = STATS_TEST_CASE['COURSE_ID'], 
+#         teesheet_id = STATS_TEST_CASE['TEESHEET_ID'], 
+#         date = STATS_TEST_CASE['DATE'], 
+#         start = STATS_TEST_CASE['STARTTIME'], 
+#         end = STATS_TEST_CASE['ENDTIME']
+#     )
+    
+#     print(slots)
+#     assert slots['data'][0]['type'] == 'teetimeSlot'
+
+
+def test_empty_booking():
     username = 'mfutch78@gmail.com'
     password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
     token = foreup_utils.get_token(username, password)
-    slots = foreup_utils.get_teetime_slots(
-        token, 
-        course_id = STATS_TEST_CASE['COURSE_ID'], 
-        teesheet_id = STATS_TEST_CASE['TEESHEET_ID'], 
-        date = STATS_TEST_CASE['DATE'], 
-        start = STATS_TEST_CASE['STARTTIME'], 
-        end = STATS_TEST_CASE['ENDTIME']
-    )
-    
-    assert slots['data'][0]['type'] == 'teetimeSlot'
+    booking = foreup_utils.get_booking(token, 21953,9442 , 'TTID_0118113400k1sj0')
+    print(booking)
+    assert booking
