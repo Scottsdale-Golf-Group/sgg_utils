@@ -326,3 +326,10 @@ def test_empty_booking():
     booking = foreup_utils.get_booking(token, 21953,9442 , 'TTID_0118113400k1sj0')
     print(booking)
     assert booking
+
+def test_get_terminals():
+    username = 'mfutch78@gmail.com'
+    password = cloud_utils.access_secret_version("593748364912", "FOREUP_MFUTCH", "latest")
+    token = foreup_utils.get_token(username, password)
+    terminals = foreup_utils.get_terminals(token, 21488)
+    assert terminals['data'][0]['type'] == 'terminals'
