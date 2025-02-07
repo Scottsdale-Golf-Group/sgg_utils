@@ -567,3 +567,14 @@ def get_teetime_slots(token, course_id, teesheet_id, date: str, start: str, end:
         return None
 
     return r.json()
+
+def get_terminals(token, course_id):
+    '''get terminals from foreup api'''
+    headers = {
+        'Content-Type': 'application/json',
+        'x-authorization': f'Bearer {token}'
+    }
+    url = f'{API_URL}/courses/{course_id}/terminals'
+    r = requests.get(url, headers=headers)
+    terminals = json.loads(r.content)
+    return terminals
